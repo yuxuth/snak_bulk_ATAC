@@ -1,0 +1,20 @@
+
+## the index folder for STAR, change to mm9 if it is mouse
+STARINDEX: "/work/06032/tg853315/stampede2/genome_index/hisat2_human/grch38_tran/genome_tran"
+## gtf file for annotation
+
+MYGTF: "/work/06032/tg853315/stampede2/genome_index/hisat2_human/grch38_tran/Homo_sapiens.GRCh38.95.gtf"
+## hisat location
+hisat: "/work/06032/tg853315/stampede2/software/hisat2-2.1.0/hisat2"
+stringtie : "/work/06032/tg853315/stampede2/software/stringtie-1.3.5.Linux_x86_64/stringtie"
+splicesite_index : "/work/06032/tg853315/stampede2/genome_index/hisat2_human/grch38_tran/Homo_sapiens.GRCh38.95.splice_site.txt"
+
+bbbuk: '/work/06032/tg853315/stampede2/software/bbmap/bbduk.sh'
+adaptors: '/work/06032/tg853315/stampede2/software/bbmap/resources/adapters.fa'
+## use which program to count 
+
+
+# Path to a JSON file with samples and their corresponding FASTQ files.
+SAMPLES_JSON: './samples.json'
+
+#CLUSTER_JSON: './cluster.json'
