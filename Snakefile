@@ -109,7 +109,7 @@ rule bowtie_mapping:
 	params: 
 		jobname = "{sample}",
 		# outprefix = "01bam_fq/{sample}"
-	threads: 24
+	threads: 12
 	# group: "mygroup"
 	message: "aligning {input} using bowtie2: {threads} threads"
 	shell:
