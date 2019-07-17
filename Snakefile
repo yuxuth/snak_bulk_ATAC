@@ -84,7 +84,7 @@ rule trim_adapter:
  	message: "trim_adaptor {input}: {threads}"
  	shell:
  		"""
-		{bbbuk} in1={input[0]} in2={input[1]} out1={output[0]} out2={output[1]} ref={adaptors} ktrim=r k=21 mink=11 hdist=1 &> {log}
+		{bbbuk} -Xmx2g in1={input[0]} in2={input[1]} out1={output[0]} out2={output[1]} ref={adaptors} ktrim=r k=21 mink=11 hdist=1 &> {log}
  		"""
 
 rule fastqc:
