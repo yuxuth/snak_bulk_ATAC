@@ -37,12 +37,15 @@ ALL_PEAKS = expand("08_peak/{sample}.peak", sample = SAMPLES)
 TARGETS = []
 TARGETS.extend(ALL_FASTQ)
 TARGETS.extend(ALL_FASTQC) 
+TARGETS.extend(ALL_TRIMMED_FASTQ)
 TARGETS.extend(ALL_SAM) 
 TARGETS.extend(ALL_BIGWIG)
 TARGETS.extend(ALL_corrdinate_SORTED_BAM)
 TARGETS.extend(ALL_name_SORTED_BAM)
 TARGETS.extend(ALL_BIGWIG)
 TARGETS.extend(ALL_PEAKS)
+
+
 # TARGETS.extend(ALL_NUCLEO)
 # TARGETS.extend(ALL_QC)
 # TARGETS.extend(ALL_ATAQV)
@@ -55,6 +58,11 @@ localrules: all
 rule all:
 	input: TARGETS
 
+##
+
+# rule all:
+# 	input: '04_sam/BC-HLI-ctr-D2-7.5k.sam'
+##
 
 rule merge_fastqs: ## merge fastq
 	input:
@@ -112,12 +120,12 @@ rule bowtie_mapping:
 	params: 
 		jobname = "{sample}",
 		# outprefix = "01bam_fq/{sample}"
-	threads: 24 
-	# group: "mygroup"
+	threads: 96 
+	# group: "mapping"
 	message: "aligning {input} using bowtie2: {threads} threads"
 	shell:
 		"""
-		module load bowtie samtools
+		module load bowtie 
 		bowtie2 --threads {threads} --very-sensitive  -k 10 -x {bowtie2_index} \
 		 -1 {input[0]} -2 {input[1]} 2> {log} > {output}
 		"""
