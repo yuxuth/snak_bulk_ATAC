@@ -122,9 +122,6 @@ rule bowtie_mapping:
 		 -1 {input[0]} -2 {input[1]} 2> {log} > {output}
 		"""
 
-ALL_corrdinate_SORTED_BAM = expand("05_corrdinate_sortBam/{sample}.corrdinate.sorted.bam", sample = SAMPLES)
-ALL_name_SORTED_BAM = expand("06_name_sortBam/{sample}.name.sorted.bam", sample = SAMPLES)
-
 
 rule name_sort_bam:
 	input:  "04_sam/{sample}.sam"
