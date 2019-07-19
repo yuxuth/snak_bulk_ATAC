@@ -1,0 +1,35 @@
+#!/bin/bash
+HELPDOC=$( cat <<EOF
+Runs given arguments as command for sbatch. Similar to using the option --wrap,
+but also outputs some statistics on the job, such as its id and the time it
+took to run the job.
+
+Usage:
+    sbatch [sbatch options] sbatch_job [sbatch_job options] command_to_run
+Options:
+    -h      This help documentation.
+    -l      Log filename (default: ~/jobs.log).
+    -n      Number of threads.
+EOF
+)
+# Halt on error
+set -e
+
+LOGFILE="$HOME/jobs.log"
+
+# Parse options
+while getopts ":hn:l:" opt; do
+    case $opt in
+        h)
+            echo "$HELPDOC"
+            exit 0
+            ;;
+        n)
+            export OMP_NUM_THREADS=$OPTARG
+            ;;
+        l)
+            LOGFILE=$OPTARG
+            ;;
+        \?)
+            echo "Invalid option: -$OPTARG" >&2
+            echo "$HELPDOC"
