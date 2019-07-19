@@ -61,7 +61,7 @@ class SnakeJobSbatch(SnakeJob):
         #make_dir(os.path.dirname(os.path.abspath(self.ofiles[0])))
 
         run_locally = False
-        ## to do set the time of rule based on the rule
+        ## to do set the time of rule based on the rule ## update the detailed parameter later
         minutes = 10
         sbatch_cmd = 'sbatch -A TG-TRA150017 -p normal \
             -t 24:%i:00  -n 1 -N 1 -o snakemake-%%j.out \

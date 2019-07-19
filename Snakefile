@@ -73,7 +73,7 @@ rule merge_fastqs: ## merge fastq
 	log: "00_log/{sample}_merge_fastq.log"
 	params:
 		jobname = "{sample}"
-	# group: "mygroup"
+	group: "mygroup"
 	threads: 1
 	message: "merging fastqs {input}: {threads} threads"
 	run:
@@ -89,7 +89,7 @@ rule trim_adapter:
  	output: "02_trim_seq/{sample}_R1.trimmed.fastq.gz" , "02_trim_seq/{sample}_R2.trimmed.fastq.gz"
  	log: "00_log/{sample}_trim_adaptor.log"
  	threads: 1
- 	# group: "mygroup"
+ 	group: "mygroup"
  	params : 
  		jobname = "{sample}"
  	message: "trim_adaptor {input}: {threads}"
@@ -103,7 +103,7 @@ rule fastqc:
 	output: "03_fqc/{sample}_R1.trimmed_fastqc.zip" , "03_fqc/{sample}_R2.trimmed_fastqc.zip"
 	log:    "00_log/{sample}_fastqc"
 	threads: 1
-	# group: "mygroup"
+	group: "mygroup"
 	params : jobname = "{sample}"
 	message: "fastqc {input}: {threads}"
 	shell:
@@ -120,7 +120,7 @@ rule bowtie_mapping:
 	params: 
 		jobname = "{sample}",
 		# outprefix = "01bam_fq/{sample}"
-	threads: 96 
+	threads: 272
 	# group: "mapping"
 	message: "aligning {input} using bowtie2: {threads} threads"
 	shell:
@@ -134,24 +134,28 @@ rule bowtie_mapping:
 rule name_sort_bam:
 	input:  "04_sam/{sample}.sam"
 	output: "05_corrdinate_sortBam/{sample}.corrdinate.sorted.bam"
-	threads: 12
+	threads: 1
 	params: jobname = "{sample}"
+	group: "sorting"
 	message: "name_sort_bam {input}: {threads} threads"
 	shell:
 	  """
-	    samtools sort -n -@ {threads} -o {output}  {input}
+	   	module load samtools 
+	    samtools sort -@ 24 -o {output}  {input}
 		"""
 
 rule corrdinate_sort_bam:
 	input:  "04_sam/{sample}.sam"
 	output: "06_name_sortBam/{sample}.name.sorted.bam"
-	threads: 12
+	threads: 1
 	params: jobname = "{sample}"
+	group: "sorting"
 	message: "corrdinate_sort_bam {input}: {threads} threads"
 	shell:
-	  """
-	    samtools sort -@ {threads} -o {output}  {input}
-		"""
+	 """
+	  	module load samtools
+	    samtools sort -n -@ 24 -o {output}  {input}
+	 """
 
 
 rule index_bam:
@@ -159,21 +163,26 @@ rule index_bam:
 	output: "05_corrdinate_sortBam/{sample}.corrdinate.sorted.bam.bai"
 	threads: 1
 	params: jobname = "{sample}"
+	group: "sorting"
 	message: "index_bam {input}: {threads} threads"
 	shell:
-	  """
+	 """
+	 	module load samtools
 	    samtools index {input} 
-		"""
+	 """
 
 rule Genrich_calling: 
 	input:  "06_name_sortBam/{sample}.name.sorted.bam"
 	output: "08_peak/{sample}.peak"
 	log:    "00_log/{sample}.peak_calling"
 	threads: 1
+	group: "sorting"
 	params: jobname = "{sample}"
 	message: "index_bam {input}: {threads} threads"
 	shell:
 	    """
+	    . "/work/06032/tg853315/stampede2/software/miniconda3/etc/profile.d/conda.sh"
+		conda activate
 	    {Genrich}  -t {input}  -o {output}  -j  -y  -r  -e chrM  -v 2> {log}
 	    """
 
@@ -182,13 +191,16 @@ rule make_bigwigs:
 	input : "05_corrdinate_sortBam/{sample}.corrdinate.sorted.bam", "05_corrdinate_sortBam/{sample}.corrdinate.sorted.bam.bai"
 	output: "07_bigwig/{sample}.bw"
 	log: "00_log/{sample}.makebw"
-	threads: 12
+	threads: 1
+	group: "sorting"
 	params: jobname = "{sample}"
 	message: "making bigwig for {input} : {threads} threads"
 	shell:
 	    """
+	    . "/work/06032/tg853315/stampede2/software/miniconda3/etc/profile.d/conda.sh"
+		conda activate
 		# no window smoothing is done, for paired-end, bamCoverage will extend the length to the fragement length of the paired reads
-	    bamCoverage -b {input[0]}  --skipNonCoveredRegions --normalizeUsing RPKM --ignoreDuplicates --extendReads 50  -p {threads}  -o {output} 2> {log}
+	    bamCoverage -b {input[0]}  --skipNonCoveredRegions --normalizeUsing RPKM --ignoreDuplicates --extendReads 50  -p 48  -o {output} 2> {log}
 	    """
 
 
